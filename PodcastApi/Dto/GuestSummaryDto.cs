@@ -1,3 +1,3 @@
 ﻿namespace PodcastApi.Dto;
 
-public record GuestSummaryDto ( int Id , string Name , int AppearanceCount ) ;
+public record GuestSummaryDto(int Id, string Name, int AppearanceCount);

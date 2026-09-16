@@ -1,8 +1,8 @@
-﻿using Microsoft . AspNetCore . Mvc ;
-using Microsoft . EntityFrameworkCore ;
-using PodcastApi . Data ;
-using PodcastApi . Dto ;
-using PodcastApi . Mappers ;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PodcastApi.Data;
+using PodcastApi.Dto;
+using PodcastApi.Mappers;
 
 namespace PodcastApi.Controllers;
 

@@ -8,7 +8,7 @@ using PodcastApi.Sync;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options => 
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration["ConnectionString:Default"]));
     
 builder.Services.AddHttpClient<RssFeedService>();
 builder.Services.AddSingleton<EpisodeParser>();

@@ -12,6 +12,7 @@ public class EpisodesController(AppDbContext db) : ControllerBase
 {
     private const int MaxPageSize = 100;
 
+    // Newest first; specials (no episode number) sort to the end.
     [HttpGet]
     public async Task<ActionResult<PagedResults<EpisodeDto>>> GetAll(int page = 1, int pageSize = 20)
     {
@@ -28,7 +29,7 @@ public class EpisodesController(AppDbContext db) : ControllerBase
             .Include(e => e.Guests)
             .ToListAsync();
         var items = episodes.Select(e => e.ToEpisodeDto()).ToList();
-        return Ok(new PagedResults<EpisodeDto>(items, page, pageSize, totalCount));
+        return Ok(new PagedResults<EpisodeDto>(items, totalCount, page, pageSize));
     }
 
     [HttpGet("{id:int}")]

@@ -1,0 +1,23 @@
+# Build
+bin /
+obj /
+[ Dd ] ebug /
+[ Rr ] elease /
+# IDE
+. vs /
+. vscode /
+. idea /
+*. user
+# NuGet
+*. nupkg
+# Local env / secrets
+. env
+appsettings .*. json
+! appsettings . json
+! appsettings . Development . json
+# SQLite runtime db
+*. db
+*. db - shm
+*. db - wal
+# Logs
+logs /

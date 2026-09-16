@@ -20,7 +20,6 @@ public class SyncService(
     public async Task<SyncResult> SyncAsync(CancellationToken ct = default)
     {
         var rssItems = await feed.GetEpisodesAsync();
-        logger.LogInformation("Fetched {Count} items from RSS feed.", rssItems.Count);
 
         // Parse everything up front and drop items we can't dedup on. An empty
         // AudioUrl would collide on the unique index the moment a second one appears.
@@ -66,7 +65,6 @@ public class SyncService(
         }
 
         await db.SaveChangesAsync(ct);
-        logger.LogInformation("Sync complete: {Added} added, {Updated} updated.", added, updated);
         return new SyncResult(rssItems.Count, added, updated);
     }
 

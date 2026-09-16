@@ -6,13 +6,9 @@ services:
     ports:
       - "${API_PORT:-8080}:8080"
     environment:
-      # Top-level config key -> plain name.
       ApiKey: ${API_KEY:?set API_KEY in .env (copy .env.example)}
-      # Nested key ConnectionString:Default -> double underscore.
       ConnectionString__Default: "Data Source=/app/data/podcast.db"
-      # On the volume, so refresh history survives container recreation.
       Logging__Directory: "/app/data/logs"
-      # Episodes drop on Tuesdays: sync every few hours that day, idle otherwise.
       Sync__Enabled: "${SYNC_ENABLED:-true}"
       Sync__Days: "${SYNC_DAYS:-Tuesday}"
       Sync__IntervalHours: "${SYNC_INTERVAL_HOURS:-3}"

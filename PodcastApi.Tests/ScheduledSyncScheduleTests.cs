@@ -6,7 +6,6 @@ public class ScheduledSyncScheduleTests
 {
     private static readonly DayOfWeek[] Tuesdays = [DayOfWeek.Tuesday];
 
-    // 2026-09-15 is a Tuesday; 2026-09-16 a Wednesday.
     private static DateTime Tue(int hour, int minute = 0) => new(2026, 9, 15, hour, minute, 0);
 
     [Fact]
@@ -19,7 +18,6 @@ public class ScheduledSyncScheduleTests
     [Fact]
     public void SlotsAreAlignedToMidnight_NotToCallTime()
     {
-        // 10:30 + 3h would be 13:30; slots are 0,3,6,9,12,...
         var next = ScheduledSyncService.NextRunLocal(Tue(10, 30), Tuesdays, 3);
         Assert.Equal(0, next.Minute);
         Assert.Equal(0, next.Hour % 3);
@@ -28,7 +26,6 @@ public class ScheduledSyncScheduleTests
     [Fact]
     public void ExactlyOnASlot_MovesToTheFollowingOne()
     {
-        // Strictly-after, so a run at 12:00 does not immediately re-trigger.
         var next = ScheduledSyncService.NextRunLocal(Tue(12, 0), Tuesdays, 3);
         Assert.Equal(new DateTime(2026, 9, 15, 15, 0, 0), next);
     }

@@ -12,7 +12,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# SQLite db lives here; mount a volume on /app/data to persist it.
 RUN mkdir -p /app/data
 
 EXPOSE 8080

@@ -1,23 +1,28 @@
 # Build
-bin /
-obj /
-[ Dd ] ebug /
-[ Rr ] elease /
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+
 # IDE
-. vs /
-. vscode /
-. idea /
-*. user
+.vs/
+.vscode/
+.idea/
+*.user
+
 # NuGet
-*. nupkg
+*.nupkg
+
 # Local env / secrets
-. env
-appsettings .*. json
-! appsettings . json
-! appsettings . Development . json
+.env
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+
 # SQLite runtime db
-*. db
-*. db - shm
-*. db - wal
+*.db
+*.db-shm
+*.db-wal
+
 # Logs
-logs /
+logs/

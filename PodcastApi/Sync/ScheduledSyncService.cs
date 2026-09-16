@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace PodcastApi.Sync;
 
 /// <summary>
@@ -60,7 +62,7 @@ public class ScheduledSyncService(
         // Catch up immediately: a container started mid-week would otherwise sit
         // idle until the next publish day with a possibly empty database.
         if (cfg.GetValue<bool?>("Sync:RunAtStartup") ?? true)
-            await RunOnceAsync(stoppingToken);
+            await RunOnceAsync("startup", stoppingToken);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -84,17 +86,25 @@ public class ScheduledSyncService(
                 }
             }
 
-            await RunOnceAsync(stoppingToken);
+            await RunOnceAsync("scheduled", stoppingToken);
         }
     }
 
-    private async Task RunOnceAsync(CancellationToken ct)
+    private async Task RunOnceAsync(string trigger, CancellationToken ct)
     {
+        var startedAt = DateTimeOffset.Now;
+        var stopwatch = Stopwatch.StartNew();
         try
         {
             using var scope = services.CreateScope();
             var sync = scope.ServiceProvider.GetRequiredService<SyncService>();
-            await sync.SyncAsync(ct);
+            var result = await sync.SyncAsync(ct);
+
+            logger.LogInformation(
+                "Refresh [{Trigger}] started {StartedAt:yyyy-MM-dd HH:mm:ss zzz}, took {Elapsed:n1}s: "
+                + "{FeedItems} feed items, {Added} added, {Updated} updated.",
+                trigger, startedAt, stopwatch.Elapsed.TotalSeconds,
+                result.FeedItems, result.Added, result.Updated);
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
@@ -102,7 +112,9 @@ public class ScheduledSyncService(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Scheduled sync failed; will retry at the next slot.");
+            logger.LogError(ex,
+                "Refresh [{Trigger}] failed after {Elapsed:n1}s; will retry at the next slot.",
+                trigger, stopwatch.Elapsed.TotalSeconds);
         }
     }
 

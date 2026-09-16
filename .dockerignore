@@ -1,0 +1,14 @@
+**/bin/
+**/obj/
+.git/
+.github/
+.idea/
+.vs/
+.vscode/
+PodcastApi.Tests/
+**/*.user
+**/appsettings.Development.json
+**/*.db
+**/*.db-shm
+**/*.db-wal
+.env

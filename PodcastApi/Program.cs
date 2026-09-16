@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PodcastApi.Data;
-//using PodcastApi.Filters;
+using PodcastApi.Filters;
 using PodcastApi.Parsing;
 using PodcastApi.Rss;
 using PodcastApi.Sync;
@@ -13,7 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddHttpClient<RssFeedService>();
 builder.Services.AddSingleton<EpisodeParser>();
 builder.Services.AddScoped<SyncService>();
-//builder.Services.AddScoped<ApiKeyAuthFilter>();
+builder.Services.AddScoped<ApiKeyAuthFilter>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();     

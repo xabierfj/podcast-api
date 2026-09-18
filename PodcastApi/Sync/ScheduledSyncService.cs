@@ -5,10 +5,6 @@ public class ScheduledSyncService(
     IConfiguration cfg,
     ILogger<ScheduledSyncService> logger) : BackgroundService
 {
-    private static readonly DayOfWeek[] DefaultDays = [DayOfWeek.Tuesday];
-    private const int DefaultIntervalHours = 3;
-    private const string DefaultTimeZone = "Europe/Madrid";
-
     public static DateTime NextRunLocal(
         DateTime nowLocal, IReadOnlyCollection<DayOfWeek> days, int intervalHours)
     {
@@ -34,10 +30,10 @@ public class ScheduledSyncService(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var days = ReadDays();
-        var intervalHours = Math.Clamp(cfg.GetValue<int?>("Sync:IntervalHours") ?? DefaultIntervalHours, 1, 24);
+        var intervalHours = cfg.GetValue<int>("Sync:IntervalHours");
         var tz = ReadTimeZone();
 
-        if (cfg.GetValue<bool?>("Sync:RunAtStartup") ?? true)
+        if (cfg.GetValue<bool>("Sync:RunAtStartup"))
             await RunOnceAsync("startup", stoppingToken);
 
         while (!stoppingToken.IsCancellationRequested)
@@ -68,11 +64,7 @@ public class ScheduledSyncService(
         try
         {
             using var scope = services.CreateScope();
-            var sync = scope.ServiceProvider.GetRequiredService<SyncService>();
-            var result = await sync.SyncAsync(ct);
-
-            logger.LogInformation("Refresh [{Trigger}]: {FeedItems} items, {Added} added, {Updated} updated.",
-                trigger, result.FeedItems, result.Added, result.Updated);
+            await scope.ServiceProvider.GetRequiredService<SyncService>().SyncAsync(trigger, ct);
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
@@ -83,26 +75,16 @@ public class ScheduledSyncService(
         }
     }
 
-    private DayOfWeek[] ReadDays()
-    {
-        var raw = cfg["Sync:Days"];
-        if (string.IsNullOrWhiteSpace(raw)) return DefaultDays;
-
-        var days = new List<DayOfWeek>();
-        foreach (var part in raw.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-        {
-            if (Enum.TryParse<DayOfWeek>(part, ignoreCase: true, out var day) && !days.Contains(day))
-                days.Add(day);
-        }
-
-        return days.Count != 0 ? [.. days] : DefaultDays;
-    }
+    private DayOfWeek[] ReadDays() =>
+        (cfg["Sync:Days"] ?? "")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(part => Enum.Parse<DayOfWeek>(part, ignoreCase: true))
+            .Distinct()
+            .ToArray();
 
     private TimeZoneInfo ReadTimeZone()
     {
-        var id = cfg["Sync:TimeZone"];
-        if (string.IsNullOrWhiteSpace(id)) id = DefaultTimeZone;
-
+        var id = cfg["Sync:TimeZone"] ?? "UTC";
         try
         {
             return TimeZoneInfo.FindSystemTimeZoneById(id);

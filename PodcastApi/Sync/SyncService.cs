@@ -17,7 +17,7 @@ public class SyncService(
     EpisodeParser parser,
     ILogger<SyncService> logger)
 {
-    public async Task<SyncResult> SyncAsync(CancellationToken ct = default)
+    public async Task<SyncResult> SyncAsync(string trigger, CancellationToken ct = default)
     {
         var rssItems = await feed.GetEpisodesAsync();
 
@@ -65,6 +65,9 @@ public class SyncService(
         }
 
         await db.SaveChangesAsync(ct);
+
+        logger.LogInformation("Refresh [{Trigger}]: {FeedItems} items, {Added} added, {Updated} updated.",
+            trigger, rssItems.Count, added, updated);
         return new SyncResult(rssItems.Count, added, updated);
     }
 

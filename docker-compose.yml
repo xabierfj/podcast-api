@@ -9,11 +9,7 @@ services:
       ApiKey: ${API_KEY:?set API_KEY in .env (copy .env.example)}
       ConnectionString__Default: "Data Source=/app/data/podcast.db"
       Logging__Directory: "/app/data/logs"
-      Sync__Enabled: "${SYNC_ENABLED:-true}"
-      Sync__Days: "${SYNC_DAYS:-Tuesday}"
-      Sync__IntervalHours: "${SYNC_INTERVAL_HOURS:-3}"
-      Sync__TimeZone: "${SYNC_TIMEZONE:-Europe/Madrid}"
-      Sync__RunAtStartup: "${SYNC_RUN_AT_STARTUP:-true}"
+      Sync__Enabled: "true"
     volumes:
       - podcast-data:/app/data
     restart: unless-stopped

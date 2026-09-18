@@ -7,16 +7,8 @@ namespace PodcastApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ApiKey]
-public class SyncController(SyncService sync, ILogger<SyncController> logger) : ControllerBase
+public class SyncController(SyncService sync) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> Post(CancellationToken ct)
-    {
-        var result = await sync.SyncAsync(ct);
-
-        logger.LogInformation("Refresh [manual]: {FeedItems} items, {Added} added, {Updated} updated.",
-            result.FeedItems, result.Added, result.Updated);
-
-        return Ok(result);
-    }
+    public async Task<IActionResult> Post(CancellationToken ct) => Ok(await sync.SyncAsync("manual", ct));
 }

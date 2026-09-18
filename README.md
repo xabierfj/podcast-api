@@ -1,6 +1,7 @@
 # Proletario y Parásito: Podcast API
 
 [![CI](https://github.com/xabierfj/podcast-api/actions/workflows/ci.yml/badge.svg)](https://github.com/xabierfj/podcast-api/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A REST API for the Spanish podcast *Proletario y Parásito*, a show that reviews *The Simpsons* episode by episode.
 It reads the podcast's public RSS feed and turns the free-text titles and descriptions into structured data:
@@ -162,3 +163,7 @@ The scope is kept small on purpose, to fit a read-heavy API over one RSS feed:
   audio file URL stays the same, so it is the most reliable way to tell episodes apart.
 - **Sync on a schedule, not on each request.** Reads stay fast and don't depend on the feed being up.
   Scheduling only on publish days keeps traffic to the feed low without adding much delay.
+
+## License
+
+[MIT](LICENSE)

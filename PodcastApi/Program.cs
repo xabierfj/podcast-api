@@ -38,11 +38,8 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope()) scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.EnsureCreated();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}    
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapGet("/",  () => "PodcastApi is Running!");
 app.MapControllers();

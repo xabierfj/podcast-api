@@ -8,9 +8,9 @@ episode numbers, guests, specials, and the *Simpsons* episode each show discusse
 
 ## Highlights
 
-- **Parses titles and descriptions.** Titles such as `42 - El Hombre Radiactivo (con Ana, Luis y Marta) | Proletario y Parásito`
+- **Parses titles and descriptions.** Titles such as `136- Repasar capítulos buenos? Oblíganos! (con Sergio Poyal) | Proletario y Parásito`
   become an episode number, a clean title, and a list of guests. Descriptions are stripped of HTML and searched for the
-  `[Episodio referencia: 4x12 - …]` tag, which links each episode to its *Simpsons* season and episode.
+  `[Episodio referencia: 07x18 - …]` tag, which links each episode to its *Simpsons* season and episode.
 - **Safe to re-run.** Each sync adds new episodes and updates existing ones, using the audio URL as the unique key.
   Guest names are unique too, so a guest who appears in many episodes is stored once.
 - **Syncs on publish days.** A background service syncs at fixed slots on the days new episodes come out
@@ -55,7 +55,7 @@ PodcastApi.Tests/  xUnit tests: parser, duration parsing, schedule calculation
 dotnet run --project PodcastApi
 ```
 
-The API starts on `http://localhost:5078`, with Swagger UI at `/swagger` (Development only). The SQLite database
+The API starts on `http://localhost:5078`, with Swagger UI at `/swagger`. The SQLite database
 is created on first run. To load episodes, call the sync endpoint (see [Configuration](#configuration) for the key):
 
 ```bash
@@ -70,7 +70,7 @@ cp .env.example .env        # set API_KEY
 docker compose up -d --build
 ```
 
-The container listens on `http://localhost:8080` (change it with `API_PORT`). Scheduled sync is on, and the first
+The container listens on `http://localhost:8080` (change it with `API_PORT`), with Swagger UI at `/swagger`. Scheduled sync is on, and the first
 sync runs at startup. The database and daily log files are stored in the `podcast-data` volume, so they survive restarts.
 
 ## API
@@ -89,30 +89,31 @@ sync runs at startup. The database and daily log files are stored in the `podcas
 {
   "items": [
     {
-      "id": 42,
-      "episodeNumber": 42,
-      "title": "El Hombre Radiactivo",
-      "description": "…",
-      "publicationDate": "2026-09-15T06:00:00Z",
-      "formattedEpisodeNumber": "#42",
-      "formattedDuration": "01:10:20",
+      "id": 2,
+      "episodeNumber": 136,
+      "title": "Repasar capítulos buenos? Oblíganos!",
+      "description": "Bart y Lisa descubren que Chester Lampwick es el verdadero creador de Rasca y Pica… [Episodio referencia: 07x18 - El día que murió la violencia]",
+      "publicationDate": "2026-02-10T05:30:00",
+      "formattedEpisodeNumber": "#136",
+      "formattedDuration": "01:09:04",
       "isSpecial": false,
       "simpsonsSeason": 7,
-      "simpsonsEpisode": 2,
-      "simpsonsTitle": "El Hombre Radiactivo",
-      "spotifyUrl": "https://…",
-      "audioUrl": "https://…",
-      "imageUrl": "https://…",
-      "guests": ["Ana", "Luis", "Marta"]
+      "simpsonsEpisode": 18,
+      "simpsonsTitle": "El día que murió la violencia",
+      "spotifyUrl": "https://podcasters.spotify.com/pod/show/proletarioyparasito/episodes/…",
+      "audioUrl": "https://traffic.megaphone.fm/APO7104903413.mp3",
+      "imageUrl": "https://d3t3ozftmdmh3i.cloudfront.net/…",
+      "guests": ["Sergio Poyal"]
     }
   ],
-  "totalCount": 180,
+  "totalCount": 137,
   "page": 1,
   "pageSize": 1
 }
 ```
 
-`POST /api/sync` returns `{ "feedItems": 180, "added": 1, "updated": 179 }`.
+`POST /api/sync` returns counts for the run. On a fresh database it returns
+`{ "feedItems": 137, "added": 137, "updated": 0 }`, and on later runs `{ "feedItems": 137, "added": 0, "updated": 137 }`.
 
 ## Configuration
 

@@ -3,6 +3,9 @@
 [![CI](https://github.com/xabierfj/podcast-api/actions/workflows/ci.yml/badge.svg)](https://github.com/xabierfj/podcast-api/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+> **Disclaimer:** This is an unofficial, fan-made project. It is not affiliated with or endorsed by the
+> *Proletario y Parásito* podcast or its creators. All podcast content and branding belong to their respective owners.
+
 A REST API for the Spanish podcast *Proletario y Parásito*, a show that reviews *The Simpsons* episode by episode.
 It reads the podcast's public RSS feed and turns the free-text titles and descriptions into structured data:
 episode numbers, guests, specials, and the *Simpsons* episode each show discusses. It serves that data through a small, paged JSON API.

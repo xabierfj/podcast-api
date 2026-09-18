@@ -9,6 +9,7 @@ services:
       ApiKey: ${API_KEY:?set API_KEY in .env (copy .env.example)}
       ConnectionString__Default: "Data Source=/app/data/podcast.db"
       Logging__Directory: "/app/data/logs"
+      PublicUrl: "http://localhost:${API_PORT:-8080}"
       Sync__Enabled: "true"
     volumes:
       - podcast-data:/app/data

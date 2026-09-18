@@ -19,9 +19,7 @@ public class EpisodesController(AppDbContext db) : ControllerBase
         if (page < 1) page = 1;
         pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
 
-        var ordered = db.Episodes
-                .OrderBy(e => e.EpisodeNumber == null)
-                .ThenByDescending(e => e.EpisodeNumber);
+        var ordered = db.Episodes.NewestFirst();
         var totalCount = await ordered.CountAsync();
         var episodes = await ordered
             .Skip((page - 1) * pageSize)

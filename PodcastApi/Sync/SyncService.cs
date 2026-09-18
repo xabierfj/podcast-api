@@ -19,7 +19,7 @@ public class SyncService(
 {
     public async Task<SyncResult> SyncAsync(string trigger, CancellationToken ct = default)
     {
-        var rssItems = await feed.GetEpisodesAsync();
+        var rssItems = await feed.GetEpisodesAsync(ct);
 
         // Parse everything up front and drop items we can't dedup on. An empty
         // AudioUrl would collide on the unique index the moment a second one appears.
@@ -95,13 +95,10 @@ public class SyncService(
         var guests = new List<Guest>();
         foreach (var name in names)
         {
-            var trimmed = name.Trim();
-            if (trimmed.Length == 0) continue;
-
-            if (!cache.TryGetValue(trimmed, out var guest))
+            if (!cache.TryGetValue(name, out var guest))
             {
-                guest = new Guest { Name = trimmed };
-                cache[trimmed] = guest;
+                guest = new Guest { Name = name };
+                cache[name] = guest;
                 db.Guests.Add(guest);
             }
             if (!guests.Contains(guest))

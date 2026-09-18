@@ -8,13 +8,12 @@ public class EpisodeParser
 {
     private const string PodcastSuffix = @"\|\s*Proletario y Parásito";
 
-    private static readonly Regex TitleWithGuestRegex = new(
-        @$"^(?<number>\d+)\s*-\s*(?<title>.+?)\s*\(con\s+(?<guests>.+?)\)\s*{PodcastSuffix}",
+    private static readonly Regex NumberedTitleRegex = new(
+        @$"^(?<number>\d+)\s*-\s*(?<title>.+?)\s*(?:\(con\s+(?<guests>.+?)\)\s*)?{PodcastSuffix}",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    private static readonly Regex TitleWithoutGuestRegex = new(
-        @$"^(?<number>\d+)\s*-\s*(?<title>.+?)\s*{PodcastSuffix}",
-        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex SuffixRegex = new(
+        PodcastSuffix, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     private static readonly Regex SpecialWithNumberRegex = new(
         @$"^ESPECIAL\s*#(?<number>\d+)\s*{PodcastSuffix}",
@@ -96,13 +95,10 @@ public class EpisodeParser
         var trimmed = title.Trim();
 
         if (TrySpecialParse(trimmed, result)) return;
-        if (TryParseWithGuest(trimmed, result)) return;
-        if (TryParseWithoutGuest(trimmed, result)) return;
+        if (TryParseNumbered(trimmed, result)) return;
 
         result.IsSpecial = true;
-        result.CleanedTitle = trimmed
-            .Replace("| Proletario y Parásito", "", StringComparison.OrdinalIgnoreCase)
-            .Trim();
+        result.CleanedTitle = SuffixRegex.Replace(trimmed, "").Trim();
     }
 
     private static int? ParseEpisodeNumber(string value) =>
@@ -121,18 +117,9 @@ public class EpisodeParser
             .ToList();
     }
 
-    private static bool TryParseWithoutGuest(string title, ParsedEpisode result)
+    private static bool TryParseNumbered(string title, ParsedEpisode result)
     {
-        var match = TitleWithoutGuestRegex.Match(title);
-        if (!match.Success) return false;
-        result.EpisodeNumber = ParseEpisodeNumber(match.Groups["number"].Value);
-        result.CleanedTitle = match.Groups["title"].Value.Trim();
-        return true;
-    }
-
-    private static bool TryParseWithGuest(string title, ParsedEpisode result)
-    {
-        var match = TitleWithGuestRegex.Match(title);
+        var match = NumberedTitleRegex.Match(title);
         if (!match.Success) return false;
         result.EpisodeNumber = ParseEpisodeNumber(match.Groups["number"].Value);
         result.CleanedTitle = match.Groups["title"].Value.Trim();

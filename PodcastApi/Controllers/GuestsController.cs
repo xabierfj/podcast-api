@@ -23,14 +23,14 @@ public class GuestsController(AppDbContext db) : ControllerBase
     [HttpGet("{id:int}/episodes")]
     public async Task<ActionResult<GuestWithEpisodesDto>> GetEpisodesWithGuest(int id)
     {
-        var guest = await db.Guests
-            .Include(g => g.Episodes).ThenInclude(e => e.Guests)
-            .FirstOrDefaultAsync(g => g.Id == id);
+        var guest = await db.Guests.FindAsync(id);
         if (guest is null) return NotFound();
 
-        var episodes = guest.Episodes
-            .OrderBy(e => e.EpisodeNumber == null)
-            .ThenByDescending(e => e.EpisodeNumber)
+        var episodes = (await db.Episodes
+                .Where(e => e.Guests.Any(g => g.Id == id))
+                .NewestFirst()
+                .Include(e => e.Guests)
+                .ToListAsync())
             .Select(e => e.ToEpisodeDto())
             .ToList();
         return Ok(new GuestWithEpisodesDto() {GuestId = guest.Id, Name =  guest.Name, Episodes = episodes});

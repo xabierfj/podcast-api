@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Xml.Linq;
 namespace PodcastApi.Rss;
 
@@ -5,13 +6,13 @@ public class RssFeedService(HttpClient http, IConfiguration cfg)
 {
     private static readonly XNamespace Itunes = "http://www.itunes.com/dtds/podcast-1.0.dtd";
 
-    public async Task<List<RssEpisodeItem>> GetEpisodesAsync()
+    public async Task<List<RssEpisodeItem>> GetEpisodesAsync(CancellationToken ct = default)
     {
         var url = cfg["Rss:FeedUrl"]
                   ?? throw new InvalidOperationException("Rss:FeedUrl is not configured.");
 
-        await using var stream = await http.GetStreamAsync(url);
-        var doc = await XDocument.LoadAsync(stream, LoadOptions.None, CancellationToken.None);
+        await using var stream = await http.GetStreamAsync(url, ct);
+        var doc = await XDocument.LoadAsync(stream, LoadOptions.None, ct);
 
         return doc.Descendants("item")
             .Select(item => new RssEpisodeItem(
@@ -26,7 +27,9 @@ public class RssFeedService(HttpClient http, IConfiguration cfg)
     }
 
     private static DateTime ParseDate(string? value) =>
-        DateTime.TryParse(value, out var date) ? date.ToUniversalTime() : default;
+        DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var date)
+            ? date.UtcDateTime
+            : default;
 
     /// <summary>
     /// Accepts iTunes duration as either total seconds ("620")
@@ -51,7 +54,6 @@ public class RssFeedService(HttpClient http, IConfiguration cfg)
         {
             3 => nums[0] * 3600 + nums[1] * 60 + nums[2],
             2 => nums[0] * 60 + nums[1],
-            1 => nums[0],
             _ => null
         };
     }

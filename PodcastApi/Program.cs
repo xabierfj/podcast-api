@@ -44,4 +44,12 @@ app.UseSwaggerUI();
 app.MapGet("/",  () => "PodcastApi is Running!");
 app.MapControllers();
 
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    var urls = app.Configuration["PublicUrl"] is { Length: > 0 } publicUrl ? [publicUrl] : app.Urls.ToArray();
+    app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("PodcastApi")
+        .LogInformation("Listening on {Urls} (Swagger at {Swagger})",
+            string.Join(", ", urls), urls[0].TrimEnd('/') + "/swagger");
+});
+
 app.Run();

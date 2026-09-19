@@ -84,6 +84,7 @@ sync runs at startup. The database and daily log files are stored in the `podcas
 | Method | Route                                | Description                                   |
 |--------|--------------------------------------|-----------------------------------------------|
 | GET    | `/api/episodes?page=1&pageSize=20`   | Paged episodes, newest first, specials last   |
+| GET    | `/api/episodes/latest`               | The most recently published episode           |
 | GET    | `/api/episodes/{id}`                 | A single episode                              |
 | GET    | `/api/guests`                        | All guests with their appearance count        |
 | GET    | `/api/guests/{id}/episodes`          | A guest and the episodes they appeared in     |

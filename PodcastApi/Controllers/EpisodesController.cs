@@ -30,6 +30,18 @@ public class EpisodesController(AppDbContext db) : ControllerBase
         return Ok(new PagedResults<EpisodeDto>(items, totalCount, page, pageSize));
     }
 
+    // Most recently published, specials included.
+    [HttpGet("latest")]
+    public async Task<ActionResult<EpisodeDto>> GetLatest()
+    {
+        var episode = await db.Episodes
+            .OrderByDescending(e => e.PublicationDate)
+            .Include(e => e.Guests)
+            .FirstOrDefaultAsync();
+
+        return episode is null ? NotFound() : Ok(episode.ToEpisodeDto());
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<EpisodeDto>> GetById(int id)
     {
